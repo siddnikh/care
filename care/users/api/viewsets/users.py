@@ -46,6 +46,7 @@ class UserFilterSet(filters.FilterSet):
     alt_phone_number = filters.CharFilter(field_name="alt_phone_number", lookup_expr="icontains")
     last_login = filters.DateFromToRangeFilter(field_name="last_login")
     district_id = filters.NumberFilter(field_name="district_id", lookup_expr="exact")
+    facility = filters.UUIDFilter(field_name="facility__external_id")
 
     def get_user_type(
         self, queryset, field_name, value,
@@ -71,7 +72,7 @@ class UserViewSet(
 
     queryset = (
         User.objects.filter(is_active=True, is_superuser=False)
-        .select_related("local_body", "district", "state")
+        .select_related("local_body", "district", "state", "facility")
         .order_by(F("last_login").desc(nulls_last=True)).annotate(
             created_by_user=F("created_by__username"),
         )

@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, RegexVa
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from care.care.facility.models.facility import Facility
 from partial_index import PQ, PartialIndex
 
 from care.utils.models.base import BaseModel
@@ -189,6 +190,7 @@ class User(AbstractUser):
     user_type = models.IntegerField(choices=TYPE_CHOICES, blank=False)
     created_by = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="users_created")
 
+    facility = models.ForeginKey(Facility, on_delete=models.PROTECT, null=True, blank=True)
     ward = models.ForeignKey(Ward, on_delete=models.PROTECT, null=True, blank=True)
     local_body = models.ForeignKey(LocalBody, on_delete=models.PROTECT, null=True, blank=True)
     district = models.ForeignKey(District, on_delete=models.PROTECT, null=True, blank=True)
