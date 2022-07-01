@@ -46,7 +46,6 @@ class UserFilterSet(filters.FilterSet):
     alt_phone_number = filters.CharFilter(field_name="alt_phone_number", lookup_expr="icontains")
     last_login = filters.DateFromToRangeFilter(field_name="last_login")
     district_id = filters.NumberFilter(field_name="district_id", lookup_expr="exact")
-    facility = filters.UUIDFilter(field_name="facility__external_id")
 
     def get_user_type(
         self, queryset, field_name, value,
@@ -58,6 +57,18 @@ class UserFilterSet(filters.FilterSet):
 
     user_type = filters.CharFilter(method="get_user_type", field_name="user_type")
 
+    def get_facility_user(
+        self, queryset, field_name, value,
+    ):
+        if value:
+            fac_users = FacilityUser.objects.filter(facility__external_id=value)
+            users = User.objects.filter(parent__in=fac_users)
+            qs = queryset.intersection(users)
+            print(qs)
+            return qs
+        return queryset
+
+    facility = filters.UUIDFilter(method="get_facility_user", field_name="facility__external_id")
 
 class UserViewSet(
     mixins.RetrieveModelMixin,
