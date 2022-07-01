@@ -61,11 +61,8 @@ class UserFilterSet(filters.FilterSet):
         self, queryset, field_name, value,
     ):
         if value:
-            fac_users = FacilityUser.objects.filter(facility__external_id=value)
-            users = User.objects.filter(parent__in=fac_users)
-            qs = queryset.intersection(users)
-            print(qs)
-            return qs
+            facility = Facility.objects.filter(external_id=value).first()
+            return facility.users.all()
         return queryset
 
     facility = filters.UUIDFilter(method="get_facility_user", field_name="facility__external_id")
